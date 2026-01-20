@@ -65,7 +65,7 @@ const DECISION_TREE = {
     'SUCCESS_A': {
         type: 'RESULT', status: 'SUCCESS', title: '🎉 符合「青年創業貸款」資格！',
         content: '恭喜！您的條件符合政府青創貸款標準。',
-        tips: '準備資料：公司登記、納稅證明(401表)、近半年存摺。'
+        tips: '準備資料：公司登記表、納稅證明(401表)、近半年存摺。'
     },
     'Q8': {
         title: 'PATH B：成熟企業審核',
