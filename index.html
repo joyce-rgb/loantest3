@@ -7,25 +7,17 @@
     <style>
         :root { --primary: #007bff; --line: #06C755; --bg: #f8f9fa; }
         body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0; }
-        
-        .disclaimer {
-            width: 100%; background-color: #fff3cd; color: #856404; text-align: center;
-            padding: 12px 10px; font-size: 0.9rem; border-bottom: 1px solid #ffeeba; font-weight: bold;
-        }
-
+        .disclaimer { width: 100%; background-color: #fff3cd; color: #856404; text-align: center; padding: 12px 10px; font-size: 0.9rem; border-bottom: 1px solid #ffeeba; font-weight: bold; }
         .container { display: flex; justify-content: center; width: 100%; padding: 40px 20px; box-sizing: border-box; }
         .card { background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 480px; text-align: center; border-top: 10px solid #ddd; }
         .status-DANGER { border-top-color: #dc3545; }
         .status-WARNING { border-top-color: #ffc107; }
         .status-SUCCESS { border-top-color: #28a745; }
-        
         h2 { margin-top: 0; color: #333; font-size: 1.5rem; }
         p { line-height: 1.6; color: #444; }
         .tips-area { font-size: 0.9rem; color: #666; margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 12px; text-align: left; }
-        
         .option-btn { display: block; width: 100%; padding: 15px; margin: 12px 0; border: 1px solid #ddd; border-radius: 12px; cursor: pointer; background: white; font-size: 1.05rem; transition: 0.2s; }
         .option-btn:hover { background: #f0f7ff; border-color: var(--primary); color: var(--primary); }
-        
         .external-btn { display: block; width: 100%; padding: 16px; margin-top: 12px; color: white; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; box-sizing: border-box; }
         .btn-line { background: var(--line); }
         .btn-blue { background: var(--primary); }
@@ -34,40 +26,30 @@
     </style>
 </head>
 <body>
-
-<div class="disclaimer">
-    ⚠️ 測驗結果僅供參考，詳細貸款情況與核貸條件仍須諮詢承辦銀行。
-</div>
-
+<div class="disclaimer">⚠️ 測驗結果僅供參考，詳細貸款情況與核貸條件仍須諮詢承辦銀行。</div>
 <div class="container">
     <div id="quiz-card" class="card">
-        <div id="main-content">
-            <h2 style="text-align: center;">載入中...</h2>
-        </div>
+        <div id="main-content"><h2 style="text-align: center;">載入中...</h2></div>
         <div id="options-box"></div>
         <div id="links-box"></div>
     </div>
 </div>
-
 <script>
     async function startQuiz(id = 'START', index = null) {
+        // 重要：路徑指向您的 check.js
         let apiUrl = `/api/check?currentId=${id}`;
         if (index !== null) apiUrl += `&optionIndex=${index}`;
-        
         try {
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error('API 無回應');
             const data = await response.json();
-            
             const card = document.getElementById('quiz-card');
             card.className = `card status-${data.status || 'DEFAULT'}`;
-            
             document.getElementById('main-content').innerHTML = `
                 <h2>${data.title}</h2>
                 <p>${data.question || data.content}</p>
                 ${data.tips ? `<div class="tips-area">💡 建議：${data.tips}</div>` : ''}
             `;
-            
             const optBox = document.getElementById('options-box');
             optBox.innerHTML = '';
             data.options.forEach((opt, i) => {
@@ -77,7 +59,6 @@
                 btn.onclick = () => startQuiz(data.id, i);
                 optBox.appendChild(btn);
             });
-
             const linkBox = document.getElementById('links-box');
             linkBox.innerHTML = '';
             if (data.externalLinks) {
@@ -91,7 +72,6 @@
                     linkBox.appendChild(a);
                 });
             }
-
             if (data.type === 'RESULT') {
                 const reBtn = document.createElement('button');
                 reBtn.className = 'option-btn'; reBtn.style.marginTop = '30px'; reBtn.style.color = '#888';
