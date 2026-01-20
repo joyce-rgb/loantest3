@@ -83,7 +83,7 @@ const DECISION_TREE = {
     },
     'FAIL_Q9': {
         type: 'RESULT', status: 'WARNING', title: '⚠️ 銀行意願低',
-        content: '營收太低，主流銀行承作意願極低。'
+        content: '營營收太低，主流銀行承作意願極低。'
     },
     'Q10': {
         title: 'PATH B：成熟企業審核',
@@ -93,7 +93,7 @@ const DECISION_TREE = {
     'FAIL_Q10': {
         type: 'RESULT', status: 'DANGER', title: '🛑 無法送件',
         content: '無營收證明（發票/報稅表），銀行無法進行審核。',
-        tips: '若有稅務疑問，推薦諮詢會計師：https://lin.ee/QHK6Cfi'
+        tips: '若有稅務疑問，推薦諮詢「雅喬 會計師」：https://lin.ee/QHK6Cfi'
     },
     'Q11': {
         title: 'PATH B：成熟企業審核',
@@ -128,7 +128,7 @@ export default function handler(req, res) {
         if (urls) {
             urls.forEach(url => {
                 let label = '了解詳情';
-                if (url.includes('lin.ee')) label = '💬 諮詢雅喬會計師';
+                if (url.includes('lin.ee')) label = '💬 諮詢雅喬 會計師';
                 if (url.includes('smelearning')) label = '📚 前往創業課程';
                 if (url.includes('flybooking')) label = '📜 申請個人信用證明';
                 if (url.includes('etax.nat.gov.tw')) label = '🧾 申請無欠稅證明'; 
