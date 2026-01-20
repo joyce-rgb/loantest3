@@ -83,7 +83,7 @@ const DECISION_TREE = {
     },
     'FAIL_Q9': {
         type: 'RESULT', status: 'WARNING', title: '⚠️ 銀行意願低',
-        content: '營營收太低，主流銀行承作意願極低。'
+        content: '營收太低，主流銀行承作意願極低。'
     },
     'Q10': {
         title: 'PATH B：成熟企業審核',
