@@ -14,10 +14,8 @@
         .status-WARNING { border-top-color: #ffc107; }
         .status-SUCCESS { border-top-color: #28a745; }
         h2 { margin-top: 0; color: #333; font-size: 1.5rem; }
-        p { line-height: 1.6; color: #444; }
         .tips-area { font-size: 0.9rem; color: #666; margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 12px; text-align: left; }
-        .option-btn { display: block; width: 100%; padding: 15px; margin: 12px 0; border: 1px solid #ddd; border-radius: 12px; cursor: pointer; background: white; font-size: 1.05rem; transition: 0.2s; }
-        .option-btn:hover { background: #f0f7ff; border-color: var(--primary); color: var(--primary); }
+        .option-btn { display: block; width: 100%; padding: 15px; margin: 12px 0; border: 1px solid #ddd; border-radius: 12px; cursor: pointer; background: white; font-size: 1.05rem; }
         .external-btn { display: block; width: 100%; padding: 16px; margin-top: 12px; color: white; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; box-sizing: border-box; }
         .btn-line { background: var(--line); }
         .btn-blue { background: var(--primary); }
@@ -36,13 +34,15 @@
 </div>
 <script>
     async function startQuiz(id = 'START', index = null) {
-        // 重要：路徑指向您的 check.js
+        // 重要：路徑必須指向 /api/check
         let apiUrl = `/api/check?currentId=${id}`;
         if (index !== null) apiUrl += `&optionIndex=${index}`;
+        
         try {
             const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error('API 無回應');
+            if (!response.ok) throw new Error('連線失敗');
             const data = await response.json();
+            
             const card = document.getElementById('quiz-card');
             card.className = `card status-${data.status || 'DEFAULT'}`;
             document.getElementById('main-content').innerHTML = `
@@ -50,6 +50,7 @@
                 <p>${data.question || data.content}</p>
                 ${data.tips ? `<div class="tips-area">💡 建議：${data.tips}</div>` : ''}
             `;
+            
             const optBox = document.getElementById('options-box');
             optBox.innerHTML = '';
             data.options.forEach((opt, i) => {
@@ -59,6 +60,7 @@
                 btn.onclick = () => startQuiz(data.id, i);
                 optBox.appendChild(btn);
             });
+
             const linkBox = document.getElementById('links-box');
             linkBox.innerHTML = '';
             if (data.externalLinks) {
@@ -72,6 +74,7 @@
                     linkBox.appendChild(a);
                 });
             }
+
             if (data.type === 'RESULT') {
                 const reBtn = document.createElement('button');
                 reBtn.className = 'option-btn'; reBtn.style.marginTop = '30px'; reBtn.style.color = '#888';
@@ -79,10 +82,7 @@
                 optBox.appendChild(reBtn);
             }
         } catch (error) {
-            document.getElementById('main-content').innerHTML = `
-                <h2>連線失敗</h2>
-                <p>請檢查您的檔案是否放在正確位置：<br><b>根目錄 / api / check.js</b></p>
-            `;
+            document.getElementById('main-content').innerHTML = `<h2>連線失敗</h2><p>請檢查您的檔案是否放在正確位置：<br><b>根目錄 / api / check.js</b></p>`;
         }
     }
     startQuiz();
