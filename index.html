@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企業融資診斷系統</title>
+    <style>
+        :root { --primary: #007bff; --line: #06C755; --credit: #2c3e50; --tax: #f39c12; --bg: #f4f7f9; }
+        body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 480px; text-align: center; box-sizing: border-box; }
+        .status-DANGER { border-top: 10px solid #dc3545; }
+        .status-WARNING { border-top: 10px solid #ffc107; }
+        .status-SUCCESS { border-top: 10px solid #28a745; }
+        h2 { margin-top: 0; color: #333; font-size: 1.5rem; }
+        .tips-box { font-size: 0.95rem; color: #555; margin-top: 20px; padding: 15px; background: #fff9e6; border-radius: 12px; border-left: 5px solid #ffc107; text-align: left; }
+        .option-btn { display: block; width: 100%; padding: 15px; margin: 12px 0; border: 1px solid #ddd; background: white; border-radius: 12px; font-size: 1.05rem; cursor: pointer; transition: 0.2s; }
+        .option-btn:hover { background: #f0f7ff; border-color: var(--primary); color: var(--primary); }
+        .external-btn { display: block; width: 100%; padding: 16px; margin-top: 12px; color: white; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); box-sizing: border-box; }
+        .btn-line { background-color: var(--line); }
+        .btn-blue { background-color: var(--primary); }
+        .btn-dark { background-color: var(--credit); }
+        .btn-orange { background-color: var(--tax); }
+        .external-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+<div id="app-card" class="card">
+    <div id="content-body">載入中...</div>
+    <div id="options-group"></div>
+    <div id="links-group"></div>
+</div>
+<script>
+    const contentBody = document.getElementById('content-body');
+    const optionsGroup = document.getElementById('options-group');
+    const linksGroup = document.getElementById('links-group');
+    const appCard = document.getElementById('app-card');
+
+    async function navigate(id = 'START', index = null) {
+        let url = `/api/quiz?currentId=${id}`;
+        if (index !== null) url += `&optionIndex=${index}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        appCard.className = `card status-${data.status || 'DEFAULT'}`;
+        contentBody.innerHTML = `<h2>${data.title}</h2><p>${data.question || data.content}</p>${data.tips ? `<div class="tips-box">💡 建議：${data.tips}</div>` : ''}`;
+        
+        optionsGroup.innerHTML = '';
+        data.options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt.label;
+            btn.onclick = () => navigate(data.id, i);
+            optionsGroup.appendChild(btn);
+        });
+
+        linksGroup.innerHTML = '';
+        if (data.externalLinks) {
+            data.externalLinks.forEach(link => {
+                const a = document.createElement('a');
+                a.href = link.url; a.target = '_blank'; a.innerText = link.label;
+                if (link.url.includes('lin.ee')) a.className = 'external-btn btn-line';
+                else if (link.url.includes('etax.nat.gov.tw')) a.className = 'external-btn btn-orange';
+                else if (link.url.includes('flybooking')) a.className = 'external-btn btn-dark';
+                else a.className = 'external-btn btn-blue';
+                linksGroup.appendChild(a);
+            });
+        }
+        if (data.type === 'RESULT') {
+            const re = document.createElement('button');
+            re.className = 'option-btn'; re.style.marginTop = '25px'; re.style.color = '#888';
+            re.innerText = '🔄 重新開始診斷'; re.onclick = () => navigate('START');
+            optionsGroup.appendChild(re);
+        }
+    }
+    navigate();
+</script>
+</body>
+</html>
