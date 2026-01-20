@@ -5,102 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>企業融資診斷系統</title>
     <style>
-        :root { --primary: #007bff; --line: #06C755; --credit: #2c3e50; --tax: #f39c12; --bg: #f8f9fa; }
-        body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; }
-        .card { background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 500px; box-sizing: border-box; }
+        :root { --primary: #007bff; --line: #06C755; --bg: #f8f9fa; }
+        body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0; }
+        
+        /* 免責聲明樣式 */
+        .disclaimer {
+            width: 100%;
+            background-color: #fff3cd;
+            color: #856404;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #ffeeba;
+            font-weight: bold;
+        }
+
+        .container { display: flex; justify-content: center; width: 100%; padding: 40px 20px; box-sizing: border-box; }
+        .card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
         .status-DANGER { border-top: 10px solid #dc3545; }
-        .status-WARNING { border-top: 10px solid #ffc107; }
         .status-SUCCESS { border-top: 10px solid #28a745; }
-        h2 { margin-top: 0; color: #333; text-align: center; }
-        p { line-height: 1.6; color: #444; text-align: center; font-size: 1.1rem; }
-        .tips-box { font-size: 0.95rem; color: #555; margin: 20px 0; padding: 15px; background: #fff9e6; border-radius: 12px; border-left: 5px solid #ffc107; }
-        .option-btn { display: block; width: 100%; padding: 16px; margin: 12px 0; border: 1px solid #ddd; background: white; border-radius: 12px; font-size: 1.05rem; cursor: pointer; transition: 0.2s; }
-        .option-btn:hover { background: #f0f7ff; border-color: var(--primary); color: var(--primary); }
-        .external-btn { display: block; width: 100%; padding: 16px; margin-top: 12px; color: white; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; text-align: center; box-sizing: border-box; }
-        .btn-line { background-color: var(--line); }
-        .btn-blue { background-color: var(--primary); }
-        .btn-dark { background-color: var(--credit); }
-        .btn-orange { background-color: var(--tax); }
-        .external-btn:hover { opacity: 0.9; transform: translateY(-2px); transition: 0.2s; }
+        
+        .option-btn { display: block; width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; cursor: pointer; background: white; font-size: 1rem; }
+        .option-btn:hover { background: #f1f3f5; }
+        
+        .external-btn { display: block; width: 100%; padding: 16px; margin-top: 15px; color: white; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 1.05rem; box-sizing: border-box; }
+        .btn-line { background: var(--line); }
+        .btn-blue { background: var(--primary); }
+        
+        .tips-text { font-size: 0.9rem; color: #666; margin-top: 15px; }
     </style>
 </head>
 <body>
-<div id="app" class="card">
-    <div id="content-body">
-        <h2 style="text-align: center;">載入中...</h2>
+
+<div class="disclaimer">
+    ⚠️ 測驗結果僅供參考，詳細貸款情況與核貸條件仍須諮詢承辦銀行。
+</div>
+
+<div class="container">
+    <div id="app" class="card">
+        <div id="display">載入中...</div>
+        <div id="options"></div>
+        <div id="links"></div>
     </div>
-    <div id="options-list"></div>
-    <div id="links-list" style="margin-top: 20px;"></div>
 </div>
 
 <script>
-    const contentBody = document.getElementById('content-body');
-    const optionsList = document.getElementById('options-list');
-    const linksList = document.getElementById('links-list');
-    const appCard = document.getElementById('app');
-
-    async function loadNode(id = 'START', index = null) {
-        // 使用相對路徑，確保 Vercel 能正確導向
-        let apiUrl = `/api/quiz?currentId=${id}`;
-        if (index !== null) apiUrl += `&optionIndex=${index}`;
+    async function load(id = 'START', idx = null) {
+        // 重要：路徑對應您的 check.js
+        let url = `/api/check?currentId=${id}`;
+        if (idx !== null) url += `&optionIndex=${idx}`;
         
         try {
-            const res = await fetch(apiUrl);
-            if (!res.ok) throw new Error('網路回應不正確');
+            const res = await fetch(url);
             const data = await res.json();
             
-            // 更新樣式與內容
-            appCard.className = `card status-${data.status || 'DEFAULT'}`;
-            contentBody.innerHTML = `
+            document.getElementById('app').className = `card status-${data.status}`;
+            document.getElementById('display').innerHTML = `
                 <h2>${data.title}</h2>
                 <p>${data.question || data.content}</p>
-                ${data.tips ? `<div class="tips-box">💡 建議：${data.tips}</div>` : ''}
+                ${data.tips ? `<p class="tips-text">💡 ${data.tips}</p>` : ''}
             `;
             
-            // 選項按鈕
-            optionsList.innerHTML = '';
+            const optArea = document.getElementById('options');
+            optArea.innerHTML = '';
             data.options.forEach((opt, i) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.innerText = opt.label;
-                btn.onclick = () => loadNode(data.id, i);
-                optionsList.appendChild(btn);
+                const b = document.createElement('button');
+                b.className = 'option-btn';
+                b.innerText = opt.label;
+                b.onclick = () => load(data.id, i);
+                optArea.appendChild(b);
             });
 
-            // 跳轉按鈕
-            linksList.innerHTML = '';
-            if (data.externalLinks && data.externalLinks.length > 0) {
-                data.externalLinks.forEach(link => {
-                    const a = document.createElement('a');
-                    a.href = link.url;
-                    a.target = '_blank';
-                    a.innerText = link.label;
-                    if (link.url.includes('lin.ee')) a.className = 'external-btn btn-line';
-                    else if (link.url.includes('etax.nat.gov.tw')) a.className = 'external-btn btn-orange';
-                    else if (link.url.includes('flybooking')) a.className = 'external-btn btn-dark';
-                    else a.className = 'external-btn btn-blue';
-                    linksList.appendChild(a);
-                });
-            }
-
-            // 重測按鈕
-            if (data.type === 'RESULT') {
-                const re = document.createElement('button');
-                re.className = 'option-btn';
-                re.style.marginTop = '30px';
-                re.style.color = '#888';
-                re.innerText = '🔄 重新檢測';
-                re.onclick = () => loadNode('START');
-                optionsList.appendChild(re);
-            }
-        } catch (err) {
-            contentBody.innerHTML = `<h2>連線異常</h2><p>無法取得診斷資料，請檢查 API 部署路徑。</p>`;
-            console.error(err);
+            const linkArea = document.getElementById('links');
+            linkArea.innerHTML = '';
+            data.externalLinks.forEach(l => {
+                const a = document.createElement('a');
+                a.href = l.url; a.target = '_blank'; a.innerText = l.label;
+                a.className = `external-btn ${l.url.includes('lin.ee') ? 'btn-line' : 'btn-blue'}`;
+                linkArea.appendChild(a);
+            });
+        } catch (e) {
+            document.getElementById('display').innerHTML = "連線失敗，請確認 api 資料夾內是否有 check.js";
         }
     }
-
-    // 初始化啟動
-    loadNode();
+    load();
 </script>
 </body>
 </html>
