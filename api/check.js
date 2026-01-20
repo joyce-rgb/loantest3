@@ -1,4 +1,3 @@
-// 這是您的核心商業邏輯，部署到 Vercel 後，使用者無法看到此檔案
 const DECISION_TREE = {
     'START': {
         title: '基本門檻檢測',
@@ -144,6 +143,8 @@ const DECISION_TREE = {
 export default function handler(req, res) {
     const { currentId, optionIndex } = req.query;
     let nextNodeId = 'START';
+    
+    // 處理路徑邏輯
     if (currentId && optionIndex !== undefined) {
         const currentNode = DECISION_TREE[currentId];
         if (currentNode && currentNode.options && currentNode.options[optionIndex]) {
@@ -152,9 +153,11 @@ export default function handler(req, res) {
     } else if (currentId) {
         nextNodeId = currentId;
     }
+    
     const nextNode = DECISION_TREE[nextNodeId];
     if (!nextNode) return res.status(404).json({ error: 'Node error' });
 
+    // 處理連結轉換
     const externalLinks = [];
     if (nextNode.tips) {
         const urlRegex = /(https?:\/\/[^\s]+)/g;
