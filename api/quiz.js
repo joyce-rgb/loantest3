@@ -7,7 +7,7 @@ const DECISION_TREE = {
     'FAIL_Q1': {
         type: 'RESULT', status: 'DANGER', title: '🛑 無法送件',
         content: '企業貸款的首要條件是合法登記。您需要先完成設立登記並取得統一編號後，才能申請相關融資。',
-        tips: '若您尚未設立公司，推薦諮詢「雅喬會計師事務所」協助辦理：https://lin.ee/QHK6Cfi'
+        tips: '若您尚未設立公司，推薦諮詢「雅喬 事務所」協助辦理：https://lin.ee/QHK6Cfi'
     },
     'Q2': {
         title: '基本門檻檢測',
@@ -186,3 +186,4 @@ export default function handler(req, res) {
         externalLinks
     });
 }
+
