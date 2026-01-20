@@ -110,6 +110,7 @@ const DECISION_TREE = {
 export default function handler(req, res) {
     const { currentId, optionIndex } = req.query;
     let nextNodeId = 'START';
+    
     if (currentId && optionIndex !== undefined) {
         const currentNode = DECISION_TREE[currentId];
         if (currentNode && currentNode.options && currentNode.options[optionIndex]) {
@@ -118,6 +119,7 @@ export default function handler(req, res) {
     } else if (currentId) {
         nextNodeId = currentId;
     }
+    
     const nextNode = DECISION_TREE[nextNodeId];
     if (!nextNode) return res.status(404).json({ error: 'Node error' });
 
