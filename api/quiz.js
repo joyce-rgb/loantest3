@@ -11,7 +11,7 @@ const DECISION_TREE = {
     },
     'Q2': {
         title: '基本門檻檢測',
-        question: 'Q2：負責人是否年滿 20 歲且具備完全行為能力？',
+        question: 'Q2：負責人是否年滿 18 歲且具備完全行為能力？',
         options: [{ label: '是', nextId: 'Q3' }, { label: '否', nextId: 'FAIL_Q2' }]
     },
     'FAIL_Q2': {
@@ -186,4 +186,5 @@ export default function handler(req, res) {
         externalLinks
     });
 }
+
 
